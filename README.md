@@ -1,8 +1,4 @@
-#### ETS Web Programming Repository
+#### Final Project Basis Data Terdistribusi
 
-Team Members are :
-* Rafif Ridho (05111840000058) Web Programming B
-* Adam Abelard Garibaldi (05111840000125) Web Programming C
-* Muhamat Samsu DHuha (05111840000155) Web Programming B
-
-link to the web : https://reviewbookspweb.000webhostapp.com/
+Arsitektur Aplikasi
+![image](https://user-images.githubusercontent.com/56763706/146682939-ae2281d7-13df-42a7-bc1d-ca194d3794a0.png)
