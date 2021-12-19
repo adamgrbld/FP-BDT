@@ -1,0 +1,57 @@
+#instalasi MySQL server
+//Jalankan perintah berikut pada kedua server MySQL:
+sudo apt-get update -y
+sudo apt-get install mysql-server -y
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+#Lakukan konfigurasi MySQL secure installation pada kedua server:
+sudo mysql_secure_installation
+
+#Konfigurasi root user MySQL Server
+sudo mysql
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ‘adam';
+FLUSH PRIVILEGES;
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+# Konfigurasi MySQL pada Master
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+// Tambahkan konfigurasi berikut pada bagian [mysqld]
+bind-address = 0.0.0.0
+server-id = 1
+log_bin = /var/log/mysql/mysql-bin.log
+
+//Restart MySQL
+sudo systemctl restart mysql
+
+mysql -u root –p
+
+CREATE USER 'replica'@'IP_private_slave' IDENTIFIED BY 'Replica123!';
+GRANT REPLICATION SLAVE ON *.* TO 'replica'@'IP_private_slave';
+
+//Cek status MySQL server master dengan menggunakan perintah:
+SHOW MASTER STATUS\G
+
+#Konfigurasi MySQL SLAVE
+sudo rm -f /var/lib/mysql/auto.cnf
+
+sudo systemctl restart mysql
+
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+//Edit konfigurasi pada bagian [mysqld]
+    bind-address = 0.0.0.0
+    server-id = 2
+    log_bin = /var/log/mysql/mysql-bin.log
+
+sudo systemctl restart mysql
+
+Mysql -u root -p
+
+STOP SLAVE;
+CHANGE MASTER TO MASTER_HOST='IP_private_server1', MASTER_USER='replica', 
+MASTER_PASSWORD='Replica123!', MASTER_LOG_FILE='mysql-bin.000002', 
+MASTER_LOG_POS=619;
+START SLAVE;
+
+SHOW SLAVE STATUS\G

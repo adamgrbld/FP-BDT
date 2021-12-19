@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Book;
 use App\Review;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ReviewController extends Controller
 {
@@ -14,20 +15,41 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-        $assignments = null;
+    // public function index(Request $request)
+    // {
+    //     $assignments = null;
+
+    //     if (!is_null($request->keyword)) {
+    //         $assignments = Book::where('name', 'like', '%' . $request->keyword . '%')->orderBy('created_at', 'desc')->get();
+    //     }
+    //     else{
+    //         $assignments = Book::orderBy('created_at', 'desc')->get();
+    //     }
+
+    //     return view('user/list')->with('list_book', $assignments);
+    // }
+    public function index(Request $request) {
 
         if (!is_null($request->keyword)) {
-            $assignments = Book::where('name', 'like', '%' . $request->keyword . '%')->orderBy('created_at', 'desc')->get();
+
+            $cachedBook = Redis::get('book_'.$request->keyword);
+      
+            if(isset($cachedBook)) {
+                $assignments = json_decode($cachedBook, FALSE);
+          
+                
+            }else {
+                $assignments = Book::where('name', 'like', '%' . $request->keyword . '%')->orderBy('created_at', 'desc')->get();
+                Redis::set('book_' . $request->keyword , $assignments);
+            }
         }
         else{
             $assignments = Book::orderBy('created_at', 'desc')->get();
         }
-
+     
         return view('user/list')->with('list_book', $assignments);
-    }
 
+      }
     /**
      * Show the form for creating a new resource.
      *
