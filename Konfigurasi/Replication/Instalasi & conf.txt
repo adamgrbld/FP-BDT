@@ -27,8 +27,9 @@ sudo systemctl restart mysql
 
 mysql -u root –p
 
-CREATE USER 'replica'@'IP_private_slave' IDENTIFIED BY 'Replica123!';
-GRANT REPLICATION SLAVE ON *.* TO 'replica'@'IP_private_slave';
+CREATE USER 'replica'@'10.0.0.121' IDENTIFIED BY 'Replica123!';
+GRANT REPLICATION SLAVE ON *.* TO 'replica'@'10.0.0.121';
+
 
 //Cek status MySQL server master dengan menggunakan perintah:
 SHOW MASTER STATUS\G
@@ -49,9 +50,8 @@ sudo systemctl restart mysql
 Mysql -u root -p
 
 STOP SLAVE;
-CHANGE MASTER TO MASTER_HOST='IP_private_server1', MASTER_USER='replica', 
-MASTER_PASSWORD='Replica123!', MASTER_LOG_FILE='mysql-bin.000002', 
-MASTER_LOG_POS=619;
+CHANGE MASTER TO MASTER_HOST='10.0.0.56', MASTER_USER='replica', MASTER_PASSWORD='Replica123!', MASTER_LOG_FILE='mysql-bin.000001', MASTER_LOG_POS=619;
+
 START SLAVE;
 
 SHOW SLAVE STATUS\G

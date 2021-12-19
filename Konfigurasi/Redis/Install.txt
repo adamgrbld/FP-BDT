@@ -1,0 +1,46 @@
+Referensi
+1. https://www.willandskill.se/en/setup-a-highly-available-redis-cluster-with-sentinel-and-haproxy/
+2. https://medium.com/@amila922/redis-sentinel-high-availability-everything-you-need-to-know-from-dev-to-prod-complete-guide-deb198e70ea6
+
+
+1. Install Redis
+
+    sudo apt update
+    sudo apt install redis-server -y
+
+2. Edit file konfigurasi (referensi 2)
+
+    /etc/redis/redis.conf
+        - comment bagian 'bind 127.0.0.1 ::1'
+        - set 'protected-mode' to 'no'
+        - tambahkan konfigurasi 'slaveof' (di bagian slave)
+
+    /etc/redis/sentinel.conf (ada di file contoh)
+
+3. Restart redis dan cek proses replikasi
+    $ sudo systemctl restart redis
+    $ redis-cli SET hello "world"
+    $ redis-cli GET hello
+
+4. Jalankan redis-sentinel untuk high availability
+    sudo redis-server /etc/redis/sentinel.conf --sentinel
+
+5. Edit file /etc/redis/sentinel.conf agar Redis dapat dijalankan menjadi daemon
+
+6. Tambahkan file /etc/systemd/system/sentinel.service
+
+7. Ubah file permission
+    sudo chown redis:redis /etc/redis/sentinel.conf
+    sudo chown redis:redis /var/log/redis/sentinel.log
+    sudo chmod 640 /etc/redis/sentinel.conf
+    sudo chmod 660 /var/log/redis/sentinel.log
+
+8. Reload daemon dan aktifkan Sentinel daemon
+    sudo systemctl daemon-reload
+    sudo systemctl enable sentinel.service
+
+9. Start Sentinel daemon
+    sudo systemctl start sentinel
+
+10. Cek status replikasi
+    redis-cli info replication | grep role
